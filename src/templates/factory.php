@@ -18,7 +18,7 @@ final class Factory
         $this->diContainer = $diContainer;
     }
 
-    public function create(array $params) : object
+    public function create(array $params)
     {
     }
 }
