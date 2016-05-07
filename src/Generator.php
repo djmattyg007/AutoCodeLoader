@@ -92,14 +92,14 @@ class Generator
         $baseName = $matches[1];
         $namespace = substr($className, 0, strrpos($className, "\\"));
 
-        $klass = FileGenerator::fromReflectedFileName(__DIR__ . DIRECTORY_SEPARATOR . "templates" . DIRECTORY_SEPARATOR . "factory.php")->getClass("Factory");
-        $klass->setNamespaceName($namespace)
+        $class = FileGenerator::fromReflectedFileName(__DIR__ . DIRECTORY_SEPARATOR . "templates" . DIRECTORY_SEPARATOR . "factory.php")->getClass("Factory");
+        $class->setNamespaceName($namespace)
             ->setName("{$baseName}Factory");
-        $createMethod = $klass->getMethod("create");
+        $createMethod = $class->getMethod("create");
         $createMethod->setBody('return $this->diContainer->newInstance(' . $baseName . '::class, $params);')
             ->setReturnType("{$namespace}\\{$baseName}");
 
-        return $this->writeFile($className, $klass->generate());
+        return $this->writeFile($className, $class->generate());
     }
 
     /**
