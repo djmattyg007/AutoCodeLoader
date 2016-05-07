@@ -17,12 +17,12 @@ class Scanner
     }
 
     /**
-     * @param $scanner
+     * @param DirectoryScanner $dirScanner
      * @return array
      */
-    private function findClasses($scanner) : array
+    private function findClasses(DirectoryScanner $dirScanner) : array
     {
-        $classes = $scanner->getClasses();
+        $classes = $dirScanner->getClasses();
         $foundClasses = array();
         foreach ($classes as $klass) {
             $constructor = $klass->getMethod("__construct");
