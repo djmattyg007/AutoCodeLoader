@@ -5,6 +5,7 @@ to avoid you having to duplicate this boilerplate constantly.
 
 Currently its scope is somewhat limited. It will not yet generate proxies, and
 it will only generate Factories designed to work with the Aura.Di dependency
-injection container.
+injection container. Feel free to contribute patches to add support for other
+systems though!
 
 This software is released into the public domain without any warranty.
