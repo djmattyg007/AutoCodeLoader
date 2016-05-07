@@ -4,6 +4,10 @@ declare(strict_types=1);
 namespace MattyG\AutoCodeLoader;
 
 use Zend\Code\Generator\FileGenerator;
+use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\ParameterGenerator;
+use Zend\Code\Generator\PropertyGenerator;
+use Zend\Code\Generator\TraitGenerator;
 
 class Generator
 {
@@ -30,6 +34,15 @@ class Generator
     private function deriveFileNameFromClassName(string $className) : string
     {
         return $this->generationDir . str_replace("\\", DIRECTORY_SEPARATOR, $className) . ".php";
+    }
+
+    /**
+     * @param string $className
+     * @return string
+     */
+    private function deriveNamespaceFromClassName(string $className) : string
+    {
+        return substr($className, 0, strrpos($className, "\\"));
     }
 
     /**
@@ -69,15 +82,43 @@ class Generator
     }
 
     /**
-     * @param string $class
+     * @param string $className
      * @return string|null Filename of generated file on success, null on failure
      */
-    public function checkNeedsTrait(string $class)
+    public function checkNeedsTrait(string $className)
     {
-        if (!preg_match("/\\Needs([A-Za-z]+)Trait$/", $class, $matches)) {
+        if (!preg_match("/\\Needs([A-Za-z]+)Trait$/", $className, $matches)) {
             return null;
         }
-        return null;
+        $baseName = $matches[1];
+        $namespace = $this->deriveNamespaceFromClassName($className);
+        $camelCaseBaseName = $baseName;
+        $baseNameLen = strlen($baseName);
+        // This accounts for multiple capital letters at the start of a trait name
+        for ($x = 0; $x < $baseNameLen; $x++) {
+            $ord = ord($camelCaseBaseName[$x]);
+            if ($ord < 65 || $ord > 90) {
+                break;
+            }
+            $camelCaseBaseName[$x] = chr($ord + 32);
+        }
+
+        $trait = new TraitGenerator("Needs{$baseName}Trait");
+        $trait->setNamespaceName($namespace);
+
+        $property = new PropertyGenerator($camelCaseBaseName, null, PropertyGenerator::FLAG_PROTECTED);
+        $trait->addProperties(array($property));
+
+        $parameter = new ParameterGenerator($camelCaseBaseName, "{$namespace}\\{$baseName}");
+        $method = new MethodGenerator(
+            "set{$baseName}",
+            array($parameter),
+            MethodGenerator::FLAG_PUBLIC,
+            sprintf('$this->%1$s = $%1$s;', $camelCaseBaseName)
+        );
+        $trait->addMethods(array($method));
+
+        return $this->writeFile($className, $trait->generate());
     }
 
     /**
@@ -90,7 +131,7 @@ class Generator
             return null;
         }
         $baseName = $matches[1];
-        $namespace = substr($className, 0, strrpos($className, "\\"));
+        $namespace = $this->deriveNamespaceFromClassName($className);
 
         $class = FileGenerator::fromReflectedFileName(__DIR__ . DIRECTORY_SEPARATOR . "templates" . DIRECTORY_SEPARATOR . "factory.php")->getClass("Factory");
         $class->setNamespaceName($namespace)
