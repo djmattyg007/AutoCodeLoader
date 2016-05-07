@@ -1,0 +1,20 @@
+{
+    "name": "djmattyg007/autocodeloader",
+    "description": "Generate utility classes such as proxies and factories automatically.",
+    "license": "Unlicense",
+    "authors": [
+        {
+            "name": "Matthew Gamble",
+            "email": "git@matthewgamble.net"
+        }
+    ],
+    "require": {
+        "php": "^7.0.6",
+        "zendframework/zend-code": "~3.0.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "MattyG\\AutoCodeLoader\\": "src"
+        }
+    }
+}
