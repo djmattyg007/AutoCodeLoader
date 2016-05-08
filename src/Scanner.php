@@ -24,12 +24,20 @@ class Scanner
     {
         $classes = $dirScanner->getClasses();
         $foundClasses = array();
-        foreach ($classes as $klass) {
-            $constructor = $klass->getMethod("__construct");
-            if (!$constructor) {
-                continue;
+        foreach ($classes as $class) {
+            if ($class->isTrait() === true) {
+                $methods = $class->getMethods();
+                $parameters = array();
+                foreach ($methods as $method) {
+                    $parameters = array_merge($parameters, $method->getParameters(true));
+                }
+            } else {
+                $constructor = $class->getMethod("__construct");
+                if (!$constructor) {
+                    continue;
+                }
+                $parameters = $constructor->getParameters(true);
             }
-            $parameters = $constructor->getParameters(true);
             $foundClasses = array_merge($foundClasses, $this->findClassesFromParams($parameters));
         }
         return array_unique($foundClasses);
@@ -47,8 +55,6 @@ class Scanner
             if (is_string($paramClass) === false) {
                 continue;
             }
-            // Just in case
-            $paramClass = ltrim($paramClass, "\\");
 
             // We need to check for scalar type hints, as Zend\Code doesn't currently do this.
             if (($lastNsSep = strrpos($paramClass, "\\")) !== false) {

@@ -12,7 +12,7 @@ use Zend\Code\Generator\TraitGenerator;
 
 class Generator
 {
-    const GEN_VERSION = "1-dev2";
+    const GEN_VERSION = "1-dev";
 
     /**
      * @var string
@@ -116,7 +116,7 @@ class Generator
         $trait = new TraitGenerator("Needs{$baseName}Trait");
         $trait->setNamespaceName($namespace);
 
-        $docblock = new DocBlockGenerator(null, null, array(array("name" => "var", "content" => "{$namespace}\\{$baseName}")));
+        $docblock = new DocBlockGenerator(null, null, array(array("name" => "var", "content" => "\\{$namespace}\\{$baseName}")));
         $property = new PropertyGenerator($camelCaseBaseName, null, PropertyGenerator::FLAG_PROTECTED);
         $property->setDocBlock($docblock);
         $trait->addProperties(array($property));
@@ -130,14 +130,7 @@ class Generator
         );
         $trait->addMethods(array($method));
 
-        $return = $this->writeFile($className, $trait->generate());
-
-        if ($return) {
-            $this->checkFactory("{$namespace}\\{$baseName}");
-            $this->checkProxy("{$namespace}\\{$baseName}");
-        }
-
-        return $return;
+        return $this->writeFile($className, $trait->generate());
     }
 
     /**
