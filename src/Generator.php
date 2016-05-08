@@ -11,6 +11,8 @@ use Zend\Code\Generator\TraitGenerator;
 
 class Generator
 {
+    const GEN_VERSION = "1-dev";
+
     /**
      * @var string
      */
@@ -74,7 +76,14 @@ class Generator
     private function checkCache(string $className)
     {
         $filename = $this->deriveFileNameFromClassName($className);
-        if (is_readable($filename)) {
+        if (is_readable($filename) === false) {
+            return null;
+        }
+        $firstline = fgets(fopen($filename, "r"));
+        if (!preg_match("#// GEN_VERSION = (.+)$#", $firstline, $matches)) {
+            return null;
+        }
+        if ($matches[1] === self::GEN_VERSION) {
             return $filename;
         } else {
             return null;
@@ -178,7 +187,7 @@ class Generator
             }
         }
 
-        $fullFileContents = '<?php' . "\n" . 'declare(strict_types=1);' . "\n" . $fileContents;
+        $fullFileContents = '<?php // GEN_VERSION = ' . self::GEN_VERSION . "\n" . 'declare(strict_types=1);' . "\n" . $fileContents;
         $filePutCheck = file_put_contents($filename, $fullFileContents);
         if ($filePutCheck) {
             return $filename;
