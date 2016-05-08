@@ -118,7 +118,14 @@ class Generator
         );
         $trait->addMethods(array($method));
 
-        return $this->writeFile($className, $trait->generate());
+        $return = $this->writeFile($className, $trait->generate());
+
+        if ($return) {
+            $this->checkFactory("{$namespace}\\{$baseName}");
+            $this->checkProxy("{$namespace}\\{$baseName}");
+        }
+
+        return $return;
     }
 
     /**
