@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MattyG\AutoCodeLoader;
 
+use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\ParameterGenerator;
@@ -11,7 +12,7 @@ use Zend\Code\Generator\TraitGenerator;
 
 class Generator
 {
-    const GEN_VERSION = "1-dev";
+    const GEN_VERSION = "1-dev2";
 
     /**
      * @var string
@@ -115,7 +116,9 @@ class Generator
         $trait = new TraitGenerator("Needs{$baseName}Trait");
         $trait->setNamespaceName($namespace);
 
+        $docblock = new DocBlockGenerator(null, null, array(array("name" => "var", "content" => "{$namespace}\\{$baseName}")));
         $property = new PropertyGenerator($camelCaseBaseName, null, PropertyGenerator::FLAG_PROTECTED);
+        $property->setDocBlock($docblock);
         $trait->addProperties(array($property));
 
         $parameter = new ParameterGenerator($camelCaseBaseName, "{$namespace}\\{$baseName}");
