@@ -16,5 +16,8 @@
         "psr-4": {
             "MattyG\\AutoCodeLoader\\": "src"
         }
-    }
+    },
+    "bin": [
+        "bin/autocodeloader.php"
+    ]
 }
