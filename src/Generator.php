@@ -17,7 +17,7 @@ use Zend\Code\Generator\ValueGenerator;
 
 class Generator
 {
-    const GEN_VERSION = "1-dev4";
+    const GEN_VERSION = "1-dev5";
 
     /**
      * @var string
@@ -103,7 +103,7 @@ class Generator
      * @param string $className
      * @return string|null Filename of generated file on success, null on failure
      */
-    public function checkNeedsTrait(string $className)
+    private function checkNeedsTrait(string $className)
     {
         if (!preg_match("/\\Needs([A-Za-z]+)Trait$/", $className, $matches)) {
             return null;
@@ -145,7 +145,7 @@ class Generator
      * @param string $className
      * @return string|null Filename of generated file on success, null on failure
      */
-    public function checkFactory(string $className)
+    private function checkFactory(string $className)
     {
         if (!preg_match("/\\\\([A-Za-z]+)Factory$/", $className, $matches)) {
             return null;
@@ -167,7 +167,7 @@ class Generator
      * @param string $className
      * @return string|null Filename of generated file on success, null on failure
      */
-    public function checkSharedProxy(string $className)
+    private function checkSharedProxy(string $className)
     {
         if (!preg_match("/\\\\([A-Za-z]+)SharedProxy$/", $className, $matches)) {
             return null;
@@ -259,7 +259,11 @@ class Generator
         return $newMethod;
     }
 
-    private function getMethodParamDetails(ReflectionParameter $param)
+    /**
+     * @param ReflectionParameter $param
+     * @return array
+     */
+    private function getMethodParamDetails(ReflectionParameter $param) : array
     {
         $paramDetails = array(
             "name" => $param->getName(),
@@ -285,7 +289,7 @@ class Generator
      * @param string $className
      * @return string|null Filename of generated file on success, null on failure
      */
-    public function checkProxy(string $className)
+    private function checkProxy(string $className)
     {
         if (!preg_match("/\\\\([A-Za-z]+)Proxy$/", $className, $matches)) {
             return null;
