@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace MattyG\AutoCodeLoader;
 
-class Autoloader
+final class Autoloader
 {
     /**
      * @var Autoloader

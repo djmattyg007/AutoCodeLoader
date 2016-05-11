@@ -5,7 +5,7 @@ namespace MattyG\AutoCodeLoader;
 
 use Zend\Code\Scanner\DirectoryScanner;
 
-class Scanner
+final class Scanner
 {
     /**
      * @param DirectoryScanner $dirScanner
