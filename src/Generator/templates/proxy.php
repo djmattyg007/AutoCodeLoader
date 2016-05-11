@@ -28,4 +28,9 @@ final class Proxy
         }
         return $this->_instance;
     }
+
+    public function __clone()
+    {
+        $this->_instance = clone $this->_getInstance();
+    }
 }

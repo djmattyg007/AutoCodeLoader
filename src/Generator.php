@@ -5,6 +5,7 @@ namespace MattyG\AutoCodeLoader;
 
 use MattyG\AutoCodeLoader\Generator\FactoryGenerator;
 use MattyG\AutoCodeLoader\Generator\NeedsTraitGenerator;
+use MattyG\AutoCodeLoader\Generator\ProxyGenerator;
 use MattyG\AutoCodeLoader\Generator\SharedProxyGenerator;
 
 final class Generator
@@ -32,16 +33,23 @@ final class Generator
     private $sharedProxyGenerator;
 
     /**
+     * @var ProxyGenerator
+     */
+    private $proxyGenerator;
+
+    /**
      * @param string $generationDir
      * @param NeedsTraitGenerator|null $needsTraitGenerator
      * @param FactoryGenerator|null $factoryGenerator
      * @param SharedProxyGenerator|null $sharedProxyGenerator
+     * @param ProxyGenerator|null $proxyGenerator
      */
     public function __construct(
         string $generationDir,
         NeedsTraitGenerator $needsTraitGenerator = null,
         FactoryGenerator $factoryGenerator = null,
-        SharedProxyGenerator $sharedProxyGenerator = null
+        SharedProxyGenerator $sharedProxyGenerator = null,
+        ProxyGenerator $proxyGenerator = null
     ) {
         if (!is_writeable($generationDir)) {
             throw new \InvalidArgumentException(sprintf("Cannot write to '%s'", $generationDir));
@@ -51,6 +59,7 @@ final class Generator
         $this->needsTraitGenerator = $needsTraitGenerator ?: new NeedsTraitGenerator();
         $this->factoryGenerator = $factoryGenerator ?: new FactoryGenerator();
         $this->sharedProxyGenerator = $sharedProxyGenerator ?: new SharedProxyGenerator();
+        $this->proxyGenerator = $proxyGenerator ?: new ProxyGenerator();
     }
 
     /**
@@ -60,15 +69,6 @@ final class Generator
     private function deriveFileNameFromClassName(string $className) : string
     {
         return $this->generationDir . str_replace("\\", DIRECTORY_SEPARATOR, $className) . ".php";
-    }
-
-    /**
-     * @param string $className
-     * @return string
-     */
-    private function deriveNamespaceFromClassName(string $className) : string
-    {
-        return substr($className, 0, strrpos($className, "\\"));
     }
 
     /**
@@ -85,6 +85,7 @@ final class Generator
             $this->needsTraitGenerator,
             $this->factoryGenerator,
             $this->sharedProxyGenerator,
+            $this->proxyGenerator,
         );
         foreach ($generatorOrder as $generator) {
             if ($zendGenerator = $generator->handle($className)) {
@@ -92,18 +93,6 @@ final class Generator
                     return $filename;
                 }
             }
-        }
-        /*if ($filename = $this->checkNeedsTrait($className)) {
-            return $filename;
-        }*/
-        /*if ($filename = $this->checkFactory($className)) {
-            return $filename;
-        }*/
-        /*if ($filename = $this->checkSharedProxy($className)) {
-            return $filename;
-        }*/
-        if ($filename = $this->checkProxy($className)) {
-            return $filename;
         }
         return null;
     }
@@ -127,23 +116,10 @@ final class Generator
         if ($matches[1] === self::GEN_VERSION) {
             return $filename;
         } else {
+            // Cache-bust
+            @unlink($filename);
             return null;
         }
-    }
-
-    /**
-     * @param string $className
-     * @return string|null Filename of generated file on success, null on failure
-     */
-    private function checkProxy(string $className)
-    {
-        if (!preg_match("/\\\\([A-Za-z]+)Proxy$/", $className, $matches)) {
-            return null;
-        }
-        $baseName = $matches[1];
-        $namespace = $this->deriveNamespaceFromClassName($className);
-
-        return null;
     }
 
     /**
