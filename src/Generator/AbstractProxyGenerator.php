@@ -23,6 +23,16 @@ abstract class AbstractProxyGenerator implements GeneratorInterface
     abstract protected function getClassTemplate() : ClassGenerator;
 
     /**
+     * Method for subclasses to override to perform any implementation-specific modifications.
+     *
+     * @param ClassGenerator $class
+     * @param string $origTypeName
+     */
+    protected function makeExtraModifications(ClassGenerator $class, string $origTypeName)
+    {
+    }
+
+    /**
      * @param string $className
      * @return ClassGenerator
      */
@@ -72,6 +82,8 @@ abstract class AbstractProxyGenerator implements GeneratorInterface
             $addMethods[] = $this->getMethodDetails($method);
         }
         $class->addMethods($addMethods);
+
+        $this->makeExtraModifications($class, $typeName);
 
         return $class;
     }

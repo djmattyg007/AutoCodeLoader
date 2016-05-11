@@ -24,7 +24,7 @@ final class Proxy
     private function _getInstance()
     {
         if ($this->_instance === null) {
-            $this->_instance = $this->_diContainer->newInstance(_INSTANCE_NAME_);
+            $this->_instance = $this->_diContainer->newInstance(self::_INSTANCE_NAME);
         }
         return $this->_instance;
     }
