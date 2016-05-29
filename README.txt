@@ -36,9 +36,11 @@ This package makes quite a few assumptions at the moment:
   dependency injection container.
 - There is no magic with the setter traits - it relies on you using them,
   and/or configuring them for use within your dependency injection container.
-- This package relies on a couple of patches having been applied to the
-  underlying Zend\Code package that does most of the heavy lifting. More info
-  on how to deal with this will be provided soon.
+
+This package relis on a couple of patches having been applied to the underlying
+Zend\Code package that does most of the heavy lifting. Unfortunately, these
+patches need to be applied manually right now. For more information, read
+USAGE.txt.
 
 In conclusion:
 
