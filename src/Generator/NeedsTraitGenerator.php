@@ -27,7 +27,7 @@ class NeedsTraitGenerator implements GeneratorInterface
         }
         $baseName = $matches[1];
         $namespace = $this->deriveNamespaceFromClassName($className);
-        $camelCaseBaseName = $this->makeClassNameCamelCase($baseName);
+        $camelCaseBaseName = $this->stripInterfaceLabelFromName($this->makeClassNameCamelCase($baseName));
 
         $trait = new TraitGenerator("Needs{$baseName}Trait");
         $trait->setNamespaceName($namespace);
@@ -39,7 +39,7 @@ class NeedsTraitGenerator implements GeneratorInterface
 
         $parameter = new ParameterGenerator($camelCaseBaseName, "{$namespace}\\{$baseName}");
         $method = new MethodGenerator(
-            "set{$baseName}",
+            "set" . $this->stripInterfaceLabelFromName($baseName),
             array($parameter),
             MethodGenerator::FLAG_PUBLIC,
             sprintf('$this->%1$s = $%1$s;', $camelCaseBaseName)
@@ -71,5 +71,23 @@ class NeedsTraitGenerator implements GeneratorInterface
         }
 
         return $camelCaseClassName;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function stripInterfaceLabelFromName(string $name) : string
+    {
+        $ilen = strlen("Interface");
+        $namelen = strlen($name);
+        if ($ilen > $namelen) {
+            return $name;
+        }
+        if (substr_compare($name, "Interface", $namelen - $ilen, $ilen) === 0) {
+            return substr($name, 0, -$ilen);
+        } else {
+            return $name;
+        }
     }
 }

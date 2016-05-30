@@ -10,7 +10,7 @@ use MattyG\AutoCodeLoader\Generator\SharedProxyGenerator;
 
 final class Generator
 {
-    const GEN_VERSION = "1-dev7";
+    const GEN_VERSION = "1-dev8";
 
     /**
      * @var string
